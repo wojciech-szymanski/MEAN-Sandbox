@@ -1,6 +1,11 @@
 var Post = require("../../models/post");
 var router = require("express").Router();
 var websockets = require("../../websockets");
+var pubsub = require("../../pubsub");
+
+pubsub.subscribe("new_post", function (post) {
+	websockets.broadcast("new_post", post);
+});
 
 router.get("/api/posts", function (req, res, next) {
 	Post.find()
@@ -11,7 +16,7 @@ router.get("/api/posts", function (req, res, next) {
 				return next(err);
 			}
 			res.status(200).json(posts);
-		})
+		});
 });
 
 router.post("/api/posts", function (req, res, next) {
@@ -31,7 +36,7 @@ router.post("/api/posts", function (req, res, next) {
 				if (err) {
 					return next(err);
 				}
-				websockets.broadcast("new_post", post[0]);
+				pubsub.publish("new_post", post[0]);
 				res.status(201).json(post[0]);
 			});
 	});

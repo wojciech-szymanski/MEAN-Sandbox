@@ -6,10 +6,10 @@ exports.connect = function (server) {
 	var wss = new ws.Server({server: server});
 	wss.on("connection", function (ws) {
 		clients.push(ws);
-		exports.broadcast("new_client", "guys, we have a new client!");
+		exports.broadcast("new_client", "Guys, we have a new client!");
 		ws.on("close", function () {
 			_.remove(clients, ws);
-		})
+		});
 	});
 }
 
